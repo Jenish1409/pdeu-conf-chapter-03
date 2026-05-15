@@ -1,0 +1,16 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    /* Placeholder for CSS */
+  </style>
+  <defs>
+    <!-- Background / Road -->
+    <line id="road" x1="20" y1="180" x2="180" y2="180" stroke="#ccc" stroke-width="2" />
+  </defs>
+  <use href="#road" />
+  
+  <!-- Bicycle Frame -->
+  <g id="bicycle-frame" stroke="#E53935" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M60 160 L100 160 L140 120 L80 120 Z" /> <!-- Main triangle -->
+    <path d="M100 160 L110 110 L150 110" /> <!-- Seat post and handle bars -->
+  </g>
+</svg>
