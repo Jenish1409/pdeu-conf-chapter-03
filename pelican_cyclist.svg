@@ -4,8 +4,17 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    @keyframes counter-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
     .wheel {
       animation: rotate 2s linear infinite;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+    .pedal-surface {
+      animation: counter-rotate 2s linear infinite;
       transform-origin: center;
       transform-box: fill-box;
     }
@@ -16,6 +25,27 @@
     #pelican {
       animation: bob 1s ease-in-out infinite;
     }
+    @keyframes pedal-left {
+      0%, 100% { d: path("M 98 110 L 88 135 L 100 145"); }
+      25% { d: path("M 98 110 L 105 140 L 115 165"); }
+      50% { d: path("M 98 110 L 115 150 L 100 175"); }
+      75% { d: path("M 98 110 L 90 145 L 85 165"); }
+    }
+    @keyframes pedal-right {
+      0%, 100% { d: path("M 112 110 L 125 150 L 100 175"); }
+      25% { d: path("M 112 110 L 100 145 L 85 165"); }
+      50% { d: path("M 112 110 L 102 135 L 100 145"); }
+      75% { d: path("M 112 110 L 120 140 L 115 165"); }
+    }
+    .leg {
+      fill: none;
+      stroke: #333;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    #leg-l { animation: pedal-left 2s linear infinite; }
+    #leg-r { animation: pedal-right 2s linear infinite; }
   </style>
   
   <!-- Group: environment -->
@@ -31,10 +61,14 @@
     </g>
     <g id="pedals" class="wheel">
       <circle cx="100" cy="160" r="3" fill="#333" />
-      <line x1="100" y1="160" x2="100" y2="145" stroke="#333" stroke-width="2" />
-      <line x1="95" y1="145" x2="105" y2="145" stroke="#333" stroke-width="2" />
-      <line x1="100" y1="160" x2="100" y2="175" stroke="#333" stroke-width="2" />
-      <line x1="95" y1="175" x2="105" y2="175" stroke="#333" stroke-width="2" />
+      <g>
+        <line x1="100" y1="160" x2="100" y2="145" stroke="#333" stroke-width="2" />
+        <line class="pedal-surface" x1="92" y1="145" x2="108" y2="145" stroke="#333" stroke-width="4" stroke-linecap="round" />
+      </g>
+      <g>
+        <line x1="100" y1="160" x2="100" y2="175" stroke="#333" stroke-width="2" />
+        <line class="pedal-surface" x1="92" y1="175" x2="108" y2="175" stroke="#333" stroke-width="4" stroke-linecap="round" />
+      </g>
     </g>
     <g id="wheels">
       <g id="front-wheel" class="wheel">
@@ -54,6 +88,9 @@
   <g id="pelican">
     <!-- Torso -->
     <ellipse cx="105" cy="90" rx="20" ry="25" fill="white" stroke="#333" stroke-width="2" />
+    <!-- Wings -->
+    <ellipse cx="95" cy="95" rx="12" ry="18" fill="white" stroke="#333" stroke-width="1.5" />
+    <ellipse cx="115" cy="95" rx="12" ry="18" fill="white" stroke="#333" stroke-width="1.5" />
     <!-- Head -->
     <circle cx="115" cy="55" r="12" fill="white" stroke="#333" stroke-width="2" />
     <!-- Beak -->
@@ -61,6 +98,7 @@
     <!-- Eye -->
     <circle cx="120" cy="52" r="2" fill="black" />
     <!-- Legs -->
-    <line x1="100" y1="110" x2="100" y2="160" stroke="#333" stroke-width="2" />
+    <path id="leg-l" class="leg" d="M 98 110 L 88 135 L 100 145" />
+    <path id="leg-r" class="leg" d="M 112 110 L 125 150 L 100 175" />
   </g>
 </svg>
