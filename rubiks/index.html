@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Rubik's Cube</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Import maps polyfill -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <!-- Import map for Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="ui">
+        <h2>Rubik's Cube Simulator</h2>
+        <div class="control-group">
+            <label>Size:</label>
+            <input type="number" id="sizeInput" value="3" min="2" max="20">
+            <button id="generateBtn">Generate</button>
+        </div>
+        <div class="control-group">
+            <label>Axis:</label>
+            <select id="axisInput">
+                <option value="x">X</option>
+                <option value="y">Y</option>
+                <option value="z">Z</option>
+            </select>
+            <label>Layer:</label>
+            <input type="number" id="layerInput" value="0" min="0" max="2">
+            <label>Dir:</label>
+            <select id="dirInput">
+                <option value="1">CW</option>
+                <option value="-1">CCW</option>
+            </select>
+            <button id="rotateBtn">Rotate</button>
+        </div>
+        <div class="control-group actions">
+            <button id="shuffleBtn">Shuffle</button>
+            <button id="solveBtn">Solve</button>
+        </div>
+        <div class="instructions">
+            <small>Left click + drag to rotate view. Scroll to zoom.</small>
+        </div>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
