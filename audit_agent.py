@@ -7,6 +7,9 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 from deepagents import create_deep_agent
 from loguru import logger
@@ -29,6 +32,7 @@ SYSTEM_PROMPT = """
 You are the Senior Financial Auditor for Shree Manufacturing Pvt. Ltd.
 You MUST use write_todos to outline a 3-step audit plan before taking any other action.
 Use query_ledger for accounts payable data, check_delivery_log for warehouse receipts, and read_file for legal contracts.
+Use generate_invoice_chart to visualize vendor spending.
 Calculate late-delivery penalties from the contract clause and report any discrepancy greater than INR 0.
 """.strip()
 
@@ -60,13 +64,40 @@ def query_ledger(sql: str) -> str:
 
 def check_delivery_log(vendor_id: str) -> str:
     """Return warehouse receipt rows for a vendor without exposing unrelated rows."""
-    import pandas as pd
     frame = pd.read_csv(DELIVERY_LOG_PATH)
     rows = frame.loc[frame["Vendor_ID"] == vendor_id].copy()
     rows["days_late"] = (
         pd.to_datetime(rows["Actual_Delivery"]) - pd.to_datetime(rows["Expected_Delivery"])
     ).dt.days
     return rows.to_json(orient="records")
+
+
+def generate_invoice_chart() -> str:
+    """Generate a bar chart of total invoice amounts by vendor and save it to vendor_invoices.png."""
+    sql = """
+    SELECT v.Vendor_Name, SUM(i.Amount) as Total_Amount
+    FROM Vendors v
+    JOIN Invoices i ON v.Vendor_ID = i.Vendor_ID
+    GROUP BY v.Vendor_Name
+    """
+    try:
+        with _connect() as con:
+            df = pd.read_sql_query(sql, con)
+        if df.empty:
+            return "No data found to plot."
+
+        plt.figure(figsize=(12, 6))
+        chart = sns.barplot(data=df, x="Vendor_Name", y="Total_Amount")
+        chart.set_xticklabels(chart.get_xticklabels(), rotation=45, horizontalalignment='right')
+        plt.title("Total Invoice Amount by Vendor")
+        plt.tight_layout()
+        output_path = ROOT / "vendor_invoices.png"
+        plt.savefig(output_path)
+        return f"Success: Chart saved to {output_path.name}"
+    except Exception as e:
+        return f"Failure: {str(e)}"
+    finally:
+        plt.close()
 
 
 def find_contract(vendor_name: str) -> Path:
@@ -166,7 +197,7 @@ def build_augmented_prompt(prompt: str) -> str:
 def build_agent(model_name: str):
     return create_deep_agent(
         model=model_name,
-        tools=[query_ledger, check_delivery_log, read_file],
+        tools=[query_ledger, check_delivery_log, read_file, generate_invoice_chart],
         system_prompt=SYSTEM_PROMPT,
     )
 
