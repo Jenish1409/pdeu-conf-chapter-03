@@ -1,6 +1,14 @@
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <style>
-    /* Placeholder for CSS */
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .wheel {
+      animation: rotate 2s linear infinite;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
   </style>
   
   <!-- Group: environment -->
@@ -13,6 +21,18 @@
     <g id="bicycle-frame" stroke="#E53935" stroke-width="4" fill="none" stroke-linecap="round">
       <path d="M60 160 L100 160 L140 120 L80 120 Z" /> <!-- Main triangle -->
       <path d="M100 160 L110 110 L150 110" /> <!-- Seat post and handle bars -->
+    </g>
+    <g id="wheels">
+      <g id="front-wheel" class="wheel">
+        <circle cx="140" cy="160" r="25" stroke="#333" stroke-width="3" fill="none" />
+        <line x1="115" y1="160" x2="165" y2="160" stroke="#333" stroke-width="1" />
+        <line x1="140" y1="135" x2="140" y2="185" stroke="#333" stroke-width="1" />
+      </g>
+      <g id="back-wheel" class="wheel">
+        <circle cx="60" cy="160" r="25" stroke="#333" stroke-width="3" fill="none" />
+        <line x1="35" y1="160" x2="85" y2="160" stroke="#333" stroke-width="1" />
+        <line x1="60" y1="135" x2="60" y2="185" stroke="#333" stroke-width="1" />
+      </g>
     </g>
   </g>
 </svg>
