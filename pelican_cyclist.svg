@@ -9,6 +9,13 @@
       transform-origin: center;
       transform-box: fill-box;
     }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    #pelican {
+      animation: bob 1s ease-in-out infinite;
+    }
   </style>
   
   <!-- Group: environment -->
@@ -22,6 +29,13 @@
       <path d="M60 160 L100 160 L140 120 L80 120 Z" /> <!-- Main triangle -->
       <path d="M100 160 L110 110 L150 110" /> <!-- Seat post and handle bars -->
     </g>
+    <g id="pedals" class="wheel">
+      <circle cx="100" cy="160" r="3" fill="#333" />
+      <line x1="100" y1="160" x2="100" y2="145" stroke="#333" stroke-width="2" />
+      <line x1="95" y1="145" x2="105" y2="145" stroke="#333" stroke-width="2" />
+      <line x1="100" y1="160" x2="100" y2="175" stroke="#333" stroke-width="2" />
+      <line x1="95" y1="175" x2="105" y2="175" stroke="#333" stroke-width="2" />
+    </g>
     <g id="wheels">
       <g id="front-wheel" class="wheel">
         <circle cx="140" cy="160" r="25" stroke="#333" stroke-width="3" fill="none" />
@@ -34,5 +48,19 @@
         <line x1="60" y1="135" x2="60" y2="185" stroke="#333" stroke-width="1" />
       </g>
     </g>
+  </g>
+
+  <!-- Group: pelican -->
+  <g id="pelican">
+    <!-- Torso -->
+    <ellipse cx="105" cy="90" rx="20" ry="25" fill="white" stroke="#333" stroke-width="2" />
+    <!-- Head -->
+    <circle cx="115" cy="55" r="12" fill="white" stroke="#333" stroke-width="2" />
+    <!-- Beak -->
+    <path d="M125 55 Q150 65 125 75 Z" fill="#FFB300" stroke="#333" stroke-width="1" />
+    <!-- Eye -->
+    <circle cx="120" cy="52" r="2" fill="black" />
+    <!-- Legs -->
+    <line x1="100" y1="110" x2="100" y2="160" stroke="#333" stroke-width="2" />
   </g>
 </svg>
