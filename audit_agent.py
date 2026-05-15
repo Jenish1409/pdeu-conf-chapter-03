@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 from typing import Any
 
@@ -12,7 +13,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 from deepagents import create_deep_agent
-from loguru import logger
 
 ROOT = Path(__file__).resolve().parent
 ENV_PATH = ROOT / ".env"
@@ -38,7 +38,6 @@ Calculate late-delivery penalties from the contract clause and report any discre
 
 
 def _connect():
-    import sqlite3
     return sqlite3.connect(DB_PATH)
 
 
@@ -47,7 +46,7 @@ def query_ledger(sql: str) -> str:
     lowered = sql.strip().lower()
     if not lowered.startswith("select"):
         raise ValueError("Only SELECT statements are allowed")
-    with _connect() as con:
+    with closing(_connect()) as con:
         con.row_factory = sqlite3.Row
         try:
             rows = con.execute(sql).fetchall()
@@ -81,7 +80,7 @@ def generate_invoice_chart() -> str:
     GROUP BY v.Vendor_Name
     """
     try:
-        with _connect() as con:
+        with closing(_connect()) as con:
             df = pd.read_sql_query(sql, con)
         if df.empty:
             return "No data found to plot."
@@ -130,8 +129,10 @@ def build_discrepancy_summary(vendor_name: str) -> dict[str, Any]:
     vendor_id = get_vendor_id(vendor_name)
     invoices = json.loads(query_ledger(f"select Invoice_ID, Vendor_ID, Amount, Status from Invoices where Vendor_ID = '{vendor_id}'"))
     deliveries = json.loads(check_delivery_log(vendor_id))
-    max_late = max(row["days_late"] for row in deliveries)
-    invoice_amount = float(invoices[0]["Amount"])
+
+    invoice_amount = float(invoices[0]["Amount"]) if invoices else 0.0
+    max_late = max((row["days_late"] for row in deliveries), default=0)
+
     penalty = invoice_amount * 0.05 if max_late > 7 and "5% penalty" in read_contract(vendor_name) else 0.0
     return {
         "vendor_id": vendor_id,
@@ -223,7 +224,7 @@ def invoke_agent(prompt: str) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("prompt", nargs="?", default="What is your job?")
+    parser.add_argument("prompt", nargs="?", default=None)
     parser.add_argument("--self-check", action="store_true")
     args = parser.parse_args(argv)
 
@@ -231,5 +232,21 @@ def main(argv: list[str] | None = None) -> int:
         print(run_self_check())
         return 0
 
-    print(invoke_agent(args.prompt))
+    if args.prompt:
+        print(invoke_agent(args.prompt))
+        return 0
+
+    print("--- Senior Financial Auditor Interactive Session ---")
+    print("Type 'exit' or Ctrl-C to quit.")
+    try:
+        while True:
+            user_input = input("\nAuditor > ").strip()
+            if not user_input:
+                continue
+            if user_input.lower() in ("exit", "quit"):
+                break
+            print(invoke_agent(user_input))
+    except (KeyboardInterrupt, EOFError):
+        print("\nExiting auditor session...")
+
     return 0
